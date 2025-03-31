@@ -1,0 +1,45 @@
+-- Kiểm tra executor if not game or not game.Players then return print("Executor không hỗ trợ!") end
+
+-- Tải Orion UI Library local OrionLib = loadstring(game:HttpGet("https://raw.githubusercontent.com/shlexware/Orion/main/source"))() local Window = OrionLib:MakeWindow({Name = "Anura Hub", HidePremium = false, SaveConfig = true, ConfigFolder = "AnuraHub"})
+
+-- Hiển thị menu sau khi load xong OrionLib:Init()
+
+-- Auto Farm local AutoFarmTab = Window:MakeTab({Name = "Auto Farm", Icon = "rbxassetid://4483345998", PremiumOnly = false})
+
+AutoFarmTab:AddToggle({ Name = "Auto Farm", Default = false, Callback = function(state) _G.AutoFarm = state while G.AutoFarm do task.wait(0.5) pcall(function() game:GetService("ReplicatedStorage").Remotes.CommF:InvokeServer("SetSpawnPoint") for _, v in pairs(game:GetService("Workspace").Enemies:GetChildren()) do if v:FindFirstChild("Humanoid") and v.Humanoid.Health > 0 then repeat game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = v.HumanoidRootPart.CFrame * CFrame.new(0,0,-5) game:GetService("VirtualUser"):ClickButton1(Vector2.new()) task.wait() until not _G.AutoFarm or v.Humanoid.Health <= 0 end end end) end end })
+
+AutoFarmTab:AddButton({ Name = "Teleport to Fruit", Callback = function() for _, v in pairs(game:GetService("Workspace"):GetChildren()) do if v:IsA("Tool") and string.find(v.Name, "Fruit") then game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = v.Handle.CFrame break end end end })
+
+-- Player Mods local PlayerTab = Window:MakeTab({Name = "Player Mods", Icon = "rbxassetid://4483345998", PremiumOnly = false})
+
+PlayerTab:AddSlider({ Name = "WalkSpeed", Min = 16, Max = 500, Default = 16, Callback = function(s) game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = s end })
+
+PlayerTab:AddButton({ Name = "Infinite Yield", Callback = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source"))() end })
+
+PlayerTab:AddButton({ Name = "God Mode", Callback = function() local player = game.Players.LocalPlayer player.Character.Humanoid.MaxHealth = math.huge player.Character.Humanoid.Health = math.huge end })
+
+PlayerTab:AddToggle({ Name = "Aimbot", Default = false, Callback = function(state) _G.Aimbot = state local camera = game.Workspace.CurrentCamera game:GetService("RunService").RenderStepped:Connect(function() if _G.Aimbot then local closestEnemy = nil local shortestDistance = math.huge
+
+for _, enemy in pairs(game:GetService("Workspace").Enemies:GetChildren()) do
+                if enemy:FindFirstChild("HumanoidRootPart") and enemy:FindFirstChild("Humanoid") and enemy.Humanoid.Health > 0 then
+                    local screenPoint, onScreen = camera:WorldToScreenPoint(enemy.HumanoidRootPart.Position)
+                    local distance = (Vector2.new(screenPoint.X, screenPoint.Y) - Vector2.new(camera.ViewportSize.X / 2, camera.ViewportSize.Y / 2)).magnitude
+                    
+                    if distance < shortestDistance and onScreen then
+                        shortestDistance = distance
+                        closestEnemy = enemy
+                    end
+                end
+            end
+            
+            if closestEnemy then
+                camera.CFrame = CFrame.new(camera.CFrame.Position, closestEnemy.HumanoidRootPart.Position)
+            end
+        end
+    end)
+end
+
+})
+
+print("Anura Hub Loaded - Enjoy!")
+
