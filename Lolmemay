@@ -1,0 +1,38 @@
+local Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/xHeptc/Kavo-UI-Library/main/source.lua"))() local Window = Library.CreateLib("Anura hub","DarkTheme")
+
+local Tab = Window:NewTab("Main") local Section = Tab:NewSection("Auto Farm")
+
+Section:NewToggle("Auto Farm","Farms automatically", function(state) if state then print("Auto Farm ON") _G.AutoFarm = true while G.AutoFarm do game:GetService("ReplicatedStorage").Remotes.CommF:InvokeServer("SetSpawnPoint") wait(0.5) for i,v in pairs(game:GetService("Workspace").Enemies:GetChildren()) do if v:FindFirstChild("Humanoid") and v.Humanoid.Health > 0 then repeat game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = v.HumanoidRootPart.CFrame * CFrame.new(0,0,-5) game:GetService("VirtualUser"):ClickButton1(Vector2.new()) wait() until not _G.AutoFarm or v.Humanoid.Health <= 0 end end end else print("Auto Farm OFF") _G.AutoFarm = false end end)
+
+Section:NewButton("Teleport to Fruit","Teleports to nearest fruit", function() for i,v in pairs(game:GetService("Workspace"):GetChildren()) do if v:IsA("Tool") and string.find(v.Name,"Fruit") then game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = v.Handle.CFrame break end end end)
+
+Section:NewButton("Auto Collect Drops","Automatically collects drops", function() while true do for _, v in pairs(game:GetService("Workspace"):GetChildren()) do if v:IsA("Tool") then game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = v.Handle.CFrame wait(0.2) end end end end)
+
+local Tab2 = Window:NewTab("Player") local Section2 = Tab2:NewSection("Player Mods")
+
+Section2:NewSlider("WalkSpeed","Adjust your speed", 500, 16, function(s) game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = s end)
+
+Section2:NewButton("Infinite Yield","Loads Infinite Yield", function() loadstring(game:HttpGet("https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source"))() end)
+
+Section2:NewButton("God Mode","Become invincible", function() local player = game.Players.LocalPlayer player.Character.Humanoid.MaxHealth = math.huge player.Character.Humanoid.Health = math.huge end)
+
+Section2:NewButton("No Clip","Walk through walls", function() game:GetService("RunService").Stepped:Connect(function() for _, v in pairs(game.Players.LocalPlayer.Character:GetDescendants()) do if v:IsA("BasePart") and v.CanCollide then v.CanCollide = false end end end) end)
+
+Section2:NewButton("Auto Haki","Automatically enables Haki", function() game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer("ActivateBuso") end)
+
+Section2:NewButton("ESP","See all enemies and fruits", function() local function createESP(obj, color) local highlight = Instance.new("Highlight", obj) highlight.FillColor = color highlight.FillTransparency = 0.5 highlight.OutlineColor = color end
+
+for _, v in pairs(game:GetService("Workspace").Enemies:GetChildren()) do
+    createESP(v, Color3.fromRGB(255, 0, 0))
+end
+
+for _, v in pairs(game:GetService("Workspace"):GetChildren()) do
+    if v:IsA("Tool") and string.find(v.Name, "Fruit") then
+        createESP(v, Color3.fromRGB(0, 255, 0))
+    end
+end
+
+end)
+
+print("Anura hub Loaded - Enjoy!")
+
